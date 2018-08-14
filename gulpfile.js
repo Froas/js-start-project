@@ -4,11 +4,20 @@ const glob = require('glob').sync
 const source = require('vinyl-source-stream')
 const buffer = require('vinyl-buffer')
 const server = require('gulp-webserver')
+const notify = require('gulp-notify')
+const autoprefixer = require('gulp-autoprefixer')
 
 gulp.task('html', () => {
     gulp.src('src/html/**/*.html')
         .pipe(gulp.dest('build'))
 })
+
+gulp.task('css', () => {
+    gulp.src('src/css/**/*.css')
+        .pipe(autoprefixer())
+        .pipe(gulp.dest('build'))
+})
+
 
 gulp.task('js', () => {
     browserify(glob('src/js/**/*.js'))
@@ -25,9 +34,11 @@ gulp.task('js', () => {
 gulp.task('run', () => {
     gulp.watch('src/html/**/*.html', ['html'])
     gulp.watch('src/js/**/*.js', ['js'])
+    gulp.watch('src/css/**/*.css', ['css'])
 
     gulp.src('build')
+        .pipe(notify('Done!'))
         .pipe(server())
 })
 
-gulp.task('default', ['html', 'js'])
+gulp.task('default', ['html', 'js', 'css'])
